@@ -1,0 +1,90 @@
+<div class="container col-12 sm-col-10">
+<div id="table" *ngIf="local.length != 0">
+  <button [disabled] = "this.isClicked == ''" routerLink = "/details/{{this.isClicked}}" [ngClass]="isClicked == '' ? '' : 'details'" (click)="detailsClick()" type="button" id="details"  class="btn btn-light"><span class="float-btn">Details</span> <span><i id="arrow" class="material-icons">keyboard_arrow_right</i></span></button>
+  <table class="table table-hover text-nowrap">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Event</th>
+        <th>Category</th>
+        <th>Venue Info</th>
+        <th>Favorite</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let x of local;  index as i" [attr.data-index]="i" [ngClass]="x.id + 'fav' == isClicked ? 'row-highlight' : ''" >
+        <td class="align-middle" id="index">{{ i + 1 }}</td>
+
+        <ng-container *ngIf="x.dates.start.localDate == undefined; else ok">
+            <td class="align-middle"> N/A </td>
+          </ng-container>
+          <ng-template #ok>
+            <td class="align-middle">{{ x.dates.start.localDate }}</td>
+          </ng-template>
+  
+          <!-- event name -->
+          <ng-container *ngIf="x.name.length < 35; else tooLong">
+            <td class="align-middle">
+              <a routerLink="/details/{{x.id}}" matTooltip={{x.name}} matTooltipPosition="below" (click) = "onClick(x.id, x.name, x.venues[0].name, x.url )" > {{ x.name }}</a>
+            </td>
+          </ng-container>
+          <ng-template #tooLong>
+            <td class="align-middle">
+              <a routerLink = "/details/{{x.id}}" matTooltip={{x.name}}  matTooltipPosition="below" (click) = "onClick(x.id, x.name, x.venues[0].name, x.url)">{{x.name.substring(0,35).trim() + '...'}}</a>
+            </td>
+          </ng-template>
+  
+          <!-- classifications -->
+  
+          <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre != undefined && x.classifications[0].segment != undefined" [ngIfElse]="undefined1">
+            <td class="align-middle">{{ x.classifications[0].genre.name }} - {{ x.classifications[0].segment.name }}</td>
+          </ng-template>
+          <ng-template #undefined1>
+            <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre == undefined && x.classifications[0].segment != undefined" [ngIfElse]="undefined2">
+             <td class="align-middle">{{ x.classifications[0].segment.name }}</td>
+            </ng-template>
+  
+            <ng-template #undefined2>
+              <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre != undefined && x.classifications[0].segment == undefined" [ngIfElse] = "undefined3">
+              <td class="align-middle">{{ x.classifications[0].genre.name }}</td>
+              </ng-template>
+  
+              <ng-template #undefined3>
+                <td class="align-middle">N/A</td>
+              </ng-template>
+            </ng-template>
+          </ng-template>
+  
+  
+          
+          <!-- venue -->
+          <td class="align-middle">{{ x.venues[0].name }}</td>
+
+          <!-- trash bin -->
+          <td class="align-middle">
+            <button 
+              type="button" 
+              class="btn btn-light border star-btn"  
+              (click)="removeEvent(i)"
+              >
+                <i class="material-icons" >delete</i>
+            </button>
+          </td>
+  
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="table" *ngIf="local.length == 0">
+  <div class="noResults">
+    No Records
+  </div>
+</div>
+
+
+
+</div>
+
+

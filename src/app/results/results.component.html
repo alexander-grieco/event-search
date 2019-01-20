@@ -1,0 +1,104 @@
+<div class="container col-12 sm-col-10">
+<div class="progress pbar" *ngIf="(searchInfo  | json) == '{}' && isSearched">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+</div>
+
+
+<div class="align-center" *ngIf="(searchInfo  | json) != '{}' && (searchInfo['page']['totalElements'] | json) != 0">
+  <button [disabled] = "this.isClicked == ''" routerLink = "/details/{{this.isClicked}}" [ngClass]="isClicked == '' ? '' : 'details'" (click)="detailsClick()" type="button" id="details"  class="btn btn-light"><span class="float-btn">Details</span> <span ><i class="material-icons">keyboard_arrow_right</i></span></button>
+  <table class="table table-hover text-nowrap">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Date</th>
+        <th>Event</th>
+        <th>Category</th>
+        <th>Venue Info</th>
+        <th>Favorite</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let x of searchInfo['_embedded']['events'];  index as i" [attr.data-index]="i"  [ngClass]="x.id == isClicked ? 'row-highlight' : ''">
+        <!-- index -->
+        <td class="align-middle" id="index">{{ i + 1 }}</td>
+        
+        <!-- date -->
+        <ng-container *ngIf="x.dates.start.localDate == undefined; else ok">
+          <td class="align-middle"> N/A </td>
+        </ng-container>
+        <ng-template #ok>
+          <td class="align-middle">{{ x.dates.start.localDate }}</td>
+        </ng-template>
+
+        <!-- event name -->
+        <ng-container *ngIf="x.name.length < 35; else tooLong">
+          <td class="align-middle">
+            <a routerLink="/details/{{x.id}}" (click) = "onClick(x.id, x.name, x._embedded.venues[0].name, x.url )" > {{ x.name }}</a>
+          </td>
+        </ng-container>
+        <ng-template #tooLong>
+          <td class="align-middle">
+            <a routerLink = "/details/{{x.id}}" matTooltip={{x.name}}  matTooltipPosition="below" (click) = "onClick(x.id, x.name, x._embedded.venues[0].name, x.url)">{{x.name.substring(0,35).trim() + '...'}}</a>
+          </td>
+        </ng-template>
+
+        <!-- classifications -->
+
+        <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre != undefined && x.classifications[0].segment != undefined" [ngIfElse]="undefined1">
+          <td class="align-middle">{{ x.classifications[0].genre.name }} - {{ x.classifications[0].segment.name }}</td>
+        </ng-template>
+        <ng-template #undefined1>
+          <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre == undefined && x.classifications[0].segment != undefined" [ngIfElse]="undefined2">
+           <td class="align-middle">{{ x.classifications[0].segment.name }}</td>
+          </ng-template>
+
+          <ng-template #undefined2>
+            <ng-template [ngIf]="x.classifications != undefined && x.classifications[0].genre != undefined && x.classifications[0].segment == undefined" [ngIfElse] = "undefined3">
+            <td class="align-middle">{{ x.classifications[0].genre.name }}</td>
+            </ng-template>
+
+            <ng-template #undefined3>
+              <td class="align-middle">N/A</td>
+            </ng-template>
+          </ng-template>
+        </ng-template>
+
+
+        
+        <!-- venue -->
+        <td class="align-middle">{{ x._embedded.venues[0].name }}</td>
+
+        <!-- star -->
+        <td>
+          <button 
+            type="button" 
+            class="btn btn-light star-btn border"  
+            (click)="favorite(i, {
+              'name':x.name,
+              'id': x.id,
+              'dates':x.dates,
+              'venues':x._embedded.venues,
+              'classifications':x.classifications,
+              'url':x.url
+            })">
+              <i class="material-icons" [ngClass]="toggle[i] ? 'starYellow' : ''">{{toggle[i] ? 'star' : 'star_border' }}</i>
+          </button>
+        </td>    
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<div *ngIf="(searchInfo  | json) != '{}' && (searchInfo['page']['totalElements'] | json) == 0">
+  <div class="noResults">
+    No Records
+  </div>
+</div>
+
+<div *ngIf="(searchInfo  | json) == '{}' && !isSearched">
+  <div class="noResults">
+    Must submit a search
+  </div>
+</div>
+</div>

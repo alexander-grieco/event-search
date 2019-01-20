@@ -1,0 +1,13 @@
+<section>
+    <app-form></app-form>
+</section>
+
+<section>
+    <app-nav></app-nav>
+</section>
+
+<section>    
+    <div [@routeAnimations]="prepareRoute(outlet)" >
+        <router-outlet #outlet="outlet"></router-outlet>
+    </div>
+</section>

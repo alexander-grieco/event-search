@@ -1,0 +1,202 @@
+#details{
+    font-weight: bold;
+    margin-bottom: 10px;
+    height: 2.5em;
+    border: 1px solid lightgrey;
+    
+}
+
+.mobile{
+    display: none;
+}
+
+@media (max-width:576px){
+    .mobile{display: block;}
+    .desktop{display: none;}
+}
+
+#arrow{
+    margin: none;
+    padding: none;
+    position: relative;
+    top: -2px;
+}
+
+.details:hover{
+    background-color: lightgrey;
+    color: black;
+}
+
+.material-icons { 
+    /* color: rgba(0, 0, 0, 0.54);  */
+    color: black;
+}
+
+#list{
+    float: right;
+    /* margin-top: 3px;  */
+}
+
+#title{
+    text-align: center;
+}
+
+
+.material-icons { 
+    /* color: rgba(0, 0, 0, 0.54);  */
+    color: black;
+}
+
+
+.star-btn{
+    float: right;
+    width: 47px;
+    height: 36.5px;
+    background-color: white;
+}
+
+.star-btn:hover{
+    background-color: lightgrey;
+}
+
+#twitterImg{
+    /* float: right; */
+    width: 40px;
+    height: 36.5px; 
+    margin-right: 1%;
+    display: block;
+}
+
+div#twitterOverride{
+    float: right;
+    margin-right: 1%;
+}
+
+.tab-content{
+    width: 100%;
+    margin-top: 1%;
+}
+/* 
+.table{
+    flex: space-around;
+} */
+
+#seatMap{
+    max-width: 100%;
+    height: auto;
+    width: auto;
+}
+
+/* table{
+    table-layout: fixed;    
+} */
+
+tbody{
+    width: 100%;
+    min-width: 100%;
+}
+
+.table-responsive{
+    width: 100%;
+}
+
+.team_name{
+    text-align: center;
+}
+
+.cardImg{
+    max-width: 100%;
+    height: auto;
+}
+
+
+.boldCol{
+    margin-right: 5%;
+}
+
+.svgNum{
+    display: inline;
+    position: relative;
+    top: 16px;
+    left: -33px;
+}
+
+.svgWrapper{
+    height: 100%;
+}
+
+.svg{
+    float: left;
+}
+
+
+.cards{
+    margin-bottom: 5%;
+}
+
+.venueFirstCall{
+    width: 15%;
+}
+
+agm-map{
+    height: 400px;
+}
+
+.tab-pane{
+    margin-bottom: 20px;
+}
+
+#map{
+    width: 100%;
+}
+
+#songkick{
+    list-style-type: none;
+    margin:0;padding:0;
+}
+
+#songkick li{
+    border: 1px solid lightgrey;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 8px;
+}
+
+.artist{
+    color: orangered;
+}
+
+.time{
+    color: grey;
+}
+
+.type{
+    margin-bottom: 20px;
+}
+
+.songkick-btn{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* .dropdown{
+    display: inline-block;
+} */
+
+.starYellow {
+    color: gold;
+}
+
+.noResults{
+    background-color:rgb(255, 231, 183);
+    border-radius: 4px;
+    padding: 10px;
+    color: rgb(182, 143, 64);
+    margin-top: 4rem;
+}
+
+
+.float-btn{
+    position: relative;
+    top: -7px;
+}

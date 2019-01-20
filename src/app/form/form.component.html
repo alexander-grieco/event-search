@@ -1,0 +1,90 @@
+<div class="container col-12 sm-col-10">
+  <h5 class="title">Entertainment Event Ticket Search</h5>
+  <form class="container col-9 xs-col-10 border-0" autocomplete="off" [formGroup]="inputForm" id="input_form" (ngSubmit)="onSubmit()">
+    <div class="form-group row">
+      <label for="keyword" class="required col-sm-2 col-form-label" >Keyword</label>
+      <div class="col-sm-10">
+        <input 
+          type="text" 
+          class="form-control"
+          formControlName="keyword" 
+          placeholder="Enter Artist, Team or Event Name (eg. Lakers)"   
+          matInput 
+          [matAutocomplete]="auto"
+          [ngClass]="{'errorBox': inputForm.controls['keyword'].invalid && (inputForm.controls['keyword'].dirty || inputForm.controls['keyword'].touched) }"
+          required>
+          <div *ngIf="inputForm.controls['keyword'].invalid && (inputForm.controls['keyword'].dirty || inputForm.controls['keyword'].touched)" class="errorText">Please enter a keyword.</div>
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let option of options" [value]="option.name">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+        
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="category" class="col-sm-2 col-form-label">Category</label>
+      <div class="col-sm-4">
+        <select class="custom-select" id="category" formControlName="category">
+          <option value="all">All</option>
+          <option value="KZFzniwnSyZfZ7v7nJ">Music</option>
+          <option value="KZFzniwnSyZfZ7v7nE">Sports</option>
+          <option value="KZFzniwnSyZfZ7v7na">Arts &amp; Theatre</option>
+          <option value="KZFzniwnSyZfZ7v7nn">Film</option>
+          <option value="KZFzniwnSyZfZ7v7nl">Miscellaneous</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="distance" class="col-sm-2 col-form-label">Distance</label>
+      <div class="col-sm-4">
+        <input type="number" min="1" class="form-control" id="radius" placeholder="10" formControlName="radius">
+      </div>
+      <div class="col-sm-4">
+        <select class="custom-select" id="unit" formControlName="unit">
+          <option value="miles">Miles</option>
+          <option value="km">Kilometers</option>
+        </select>
+      </div>
+    </div>
+    <fieldset class="form-group">
+        <div class="row">
+          <legend class="required col-form-label col-sm-2 pt-0">From</legend>
+          <div class="col-sm-10">
+            <div class="custom-control custom-radio">
+              <input type="radio" name="location" class="custom-control-input" id="current" formControlName="location" value="current" [checked]="!enableInput" (click)="enableInput && onClick()" checked>
+              <label class="custom-control-label" for="current">Current location</label>
+            </div>
+            <div class="custom-control custom-radio">
+              <input type="radio" name="location" class="custom-control-input" id="other" formControlName="location" value="other" [checked]="enableInput" (click)="!enableInput && onClick()"/>
+              <label class="custom-control-label" for="other">Other. Please specify:</label>
+            </div>
+            <div class="col-sm-12">
+              <input 
+                type="text" 
+                class="form-control" 
+                id="otherLoc" 
+                formControlName="otherOne" 
+                [attr.disabled]="!enableInput ? '' : null" 
+                [ngClass]="{'errorBox': inputForm.controls['otherOne'].invalid && (inputForm.controls['otherOne'].dirty || inputForm.controls['otherOne'].touched) && enableInput }">
+              <div *ngIf="inputForm.controls['otherOne'].invalid && (inputForm.controls['otherOne'].dirty || inputForm.controls['otherOne'].touched) && enableInput" class="errorText">Please enter a location.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <button 
+        type="submit" 
+        class="form-btn btn btn-primary" 
+        routerLink="/results"
+        (click) = "onClear()"
+        [attr.disabled] = "(!inputForm.controls['keyword'].invalid) && (!enableInput || !inputForm.controls['otherOne'].invalid) && (geoLoc!=undefined) ? null : ''">
+        <span class="material-icons md-16">search</span>
+        <!-- <div class="magnifying" >Search</div> -->
+        <span class="float-btn">Search</span>
+      </button>
+      <button routerLink="/" class="btn form-btn" id="clear" type="reset" (click)="onClear()"><span class="material-icons md-16">clear_all</span><span class="float-btn">Clear</span></button>  
+    </form>
+</div>
+
+
+

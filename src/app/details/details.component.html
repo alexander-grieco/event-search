@@ -1,0 +1,263 @@
+
+<div class="container col-12 sm-col-10" *ngIf="isSearched">
+  <h3 id="title">{{title["name"]}}</h3>
+  <ng-container *ngIf="isFav; else favorites">
+    <button routerLink="/results" type="button" id="details" class="btn btn-light"><span><i class="material-icons">keyboard_arrow_left</i></span><span class="float-btn">List</span></button>
+  </ng-container>
+  <ng-template #favorites>
+    <button routerLink="/favorites" type="button" id="details" class="btn btn-light"><span><i class="material-icons">keyboard_arrow_left</i></span><span class="float-btn">List</span></button>
+  </ng-template>
+  
+  <button 
+    [disabled] = "allInfo$['eventInfo'] == null || allInfo$['venueInfo'] == null" 
+    type="button" 
+    class="btn btn-light star-btn border"
+    (click)="favorite({
+      'name':title['name'],
+      'id':eventId$,
+      'dates':allInfo$['eventInfo']['dates'],
+      'venues':allInfo$['eventInfo']['_embedded']['venues'],
+      'classifications':allInfo$['eventInfo']['classifications'],
+      'url': allInfo$['eventInfo']['url']
+    })">
+    <i class="material-icons" [ngClass]="isFavorite ? 'starYellow' : ''">
+      {{isFavorite ? 'star' : 'star_border' }}
+    </i>
+  </button>
+
+  <div id ="twitterOverride">
+    <!-- <a href="https://twitter.com/intent/tweet?url={{title['url']}};text=Check out {{title['name']}} located at {{title['venue']}}. Website: ;hashtags=CSCI571EventSearch" target="_blank"><img id="twitterImg" src="http://csci571.com/hw/hw8/Images/Twitter.png"></a> -->
+    <a href="https://twitter.com/intent/tweet?text=Check out {{title['name']}} located at {{title['venue']}}. Website:&url={{title['url']}}&hashtags=CSCI571EventSearch" target="_blank"><img id="twitterImg" src="http://csci571.com/hw/hw8/Images/Twitter.png"></a>
+
+  </div>
+
+  <div>
+  <!-- Tabs -->
+  <span class="desktop">
+  <ul class="nav nav-tabs justify-content-end" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="event-tab" data-toggle="tab" href="#event" role="tab" aria-controls="event" aria-selected="true">Event</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" media="" id="team-tab" data-toggle="tab" href="#team" role="tab" aria-controls="team" aria-selected="false">Artist/Teams</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="venue-tab" data-toggle="tab" href="#venue" role="tab" aria-controls="venue" aria-selected="false">Venue</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="upcoming-tab" data-toggle="tab" href="#upcoming" role="tab" aria-controls="upcoming" aria-selected="false">Upcoming Events</a>
+      </li>
+  </ul>
+  </span>
+
+  <span class="mobile">
+  <ul class="nav nav-tabs nav-fill" id="myTab" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="event-tab" data-toggle="tab" href="#event" role="tab" aria-controls="event" aria-selected="true">Event</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" media="" id="team-tab" data-toggle="tab" href="#team" role="tab" aria-controls="team" aria-selected="false">Artist</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="venue-tab" data-toggle="tab" href="#venue" role="tab" aria-controls="venue" aria-selected="false">Venue</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="upcoming-tab" data-toggle="tab" href="#upcoming" role="tab" aria-controls="upcoming" aria-selected="false">Upcoming</a>
+      </li>
+  </ul>
+  </span>
+
+  <div  class="progress pbar" *ngIf="allInfo$['eventInfo'] == null || allInfo$['venueInfo'] == null || allInfo$['songkickInfo'] == null || allInfo$['imageInfo'] == [] || allInfo$['spotifyInfo'] == []; else loading"> 
+    <div class="progress-bar progress-bar-striped progress-bar-animated show active" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 50%"></div>
+  </div>
+
+  <ng-template #loading>
+    <div class="tab-content" id="myTabContent">  
+
+      <!-- Event Tab -->
+      <div class="tab-pane fade show active" id="event" role="tabpanel" aria-labelledby="event-tab">
+        <div *ngIf="eventInfoArr.length != 0">
+          <div class="table-responsive">
+            <table class="table table-striped w-100 text-nowrap">
+              <tr *ngFor="let x of eventInfoArr" class="d-flex">
+                <td class="col-4"><strong>{{x.name}}</strong></td>
+
+                <ng-template [ngIf]="x.name != 'Time' && x.name != 'Seat Map' && x.name != 'Buy Ticket At'" [ngIfElse]="special">
+                  <td class="col-8">{{x.data}}</td>
+                </ng-template>
+                <ng-template #special>
+                  <ng-template [ngIf]="x.name == 'Time'" [ngIfElse]="notTime">
+                    <td class="col-8">{{x.data | date:'mediumDate'}} {{this.allInfo$["eventInfo"]["dates"]["start"]["localTime"]}} </td>
+                  </ng-template>
+                  <ng-template #notTime>
+                    <ng-template [ngIf]="x.name == 'Buy Ticket At'" [ngIfElse] = "seatmap">
+                      <td class="col-8"><a target="_blank" href="{{x.data}}">Ticketmaster</a></td>
+                    </ng-template>
+                    <ng-template #seatmap>
+                      <td class="col-8"><a href="#" data-toggle="modal" data-target="#seatModal">View Seat Map Here</a></td>
+                      <!-- Seat map Modal -->
+                      <div class="modal fade" id="seatModal" tabindex="-1" role="dialog" aria-labelledby="seatModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="seatModalLabel">View Seat Map</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <a href="{{x.data}}" target="_blank"><img id="seatMap" src="{{x.data}}"/></a>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    </ng-template>
+                  </ng-template>
+                  </ng-template>
+                
+                
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div *ngIf="eventInfoArr.length == 0">
+          <div class="noResults">
+            No Event Details Available for {{title['name']}}
+          </div>
+        </div>
+      </div>
+
+      <!-- team tab -->
+      <div class="tab-pane fade" id="team" role="tabpanel" aria-labelledby="team-tab">
+        <div *ngIf="allInfo$['imageInfo'][0] != '0'">
+          <div *ngFor="let x of allInfo$['imageInfo'];  index as i" [attr.data-index]="i">
+            <h5 class="team_name"><strong>{{x.name}}</strong></h5>
+            <div *ngIf="allInfo$['spotifyInfo'][0] != '0'">
+              <div class="table-responsive">
+                <table class="table table-striped w-100">
+                  <tr class="d-flex">
+                    <td class="w-50"><strong>Name</strong></td>
+                    <td class="w-50">{{allInfo$['spotifyInfo'][i]['name']}}</td>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="w-50"><strong>Followers</strong></td>
+                    <td class="w-50">{{allInfo$['spotifyInfo'][i]['followers']['total'] | number}}</td>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="w-50"><strong>Popularity</strong></td>
+                      <td class="w-50">
+                        <div class="svgWrapper mh-100">
+                          <div class="svgNum">{{allInfo$['spotifyInfo'][i]['popularity']}}</div>
+                          <round-progress class="svg" [radius]="25" [stroke]="4" [color]="'#a6cb69'" [clockwise]="false" [current]="allInfo$['spotifyInfo'][i]['popularity']" [max]='100'></round-progress>
+                        </div>
+                      </td>
+                  </tr>
+                  <tr class="d-flex">
+                    <td class="w-50"><strong>Check At</strong></td>
+                    <td class="w-50"><a href = "{{allInfo$['spotifyInfo'][i]['external_urls']['spotify']}}" target="_blank">Spotify</a></td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="card-columns cards">
+              <div *ngFor="let y of x.data" class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <a href="{{y.link}}" target="_blank"><img src="{{y.link}}" class="cardImg"/></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="allInfo$['imageInfo'][0] == '0'">
+          <div class="noResults">
+            No Artist/Team(s) Information Available for {{title['name']}} 
+          </div>
+        </div>
+      </div>
+
+      <!-- venue tab -->
+      <div class="tab-pane fade" id="venue" role="tabpanel" aria-labelledby="venue-tab">
+        <div *ngIf="venueInfoArr.length != 0">
+          <div class="table-responsive">
+            <table class="table table-striped w-100">
+              <tr *ngFor="let x of venueInfoArr" class="d-flex">
+                <td class="col-2 xs-col-3"><strong>{{x.name}}</strong></td>
+                <td class="col-10 xs-col-9">{{x.data}}</td>
+              </tr>
+            </table>
+          </div>
+          <div id="map">
+            <agm-map [latitude] = "lat" [longitude]="lng" [zoom]="15">
+              <agm-marker [latitude] = "lat" [longitude]="lng"></agm-marker>
+            </agm-map>
+          </div>
+        </div>
+        <div *ngIf="venueInfoArr.length == 0">
+          <div class="noResults">
+            No Venue Info Available for {{title['venue']}}
+          </div>
+        </div>
+      </div>
+
+
+      <!-- upcoming events -->
+      <div class="tab-pane fade" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+        <div *ngIf="allInfo$['songkickInfo']['event'] != undefined">
+          <form>
+            <div class="form-row">
+              <div class="form-group col-md-3">
+                <select class="custom-select" id="sortCategory" name="sortCategory" [(ngModel)]="selectedValue">
+                  <option *ngFor="let x of selectOptions" [ngValue]="x.value">{{x.name}}</option>
+                </select>   
+              </div>
+              <div class="form-group col-md-3">      
+                <select class="custom-select" id="sortOrder" name="sortOrder" [disabled]="selectedValue=='default'" [(ngModel)]="orderValue">
+                  <option *ngFor="let x of orderOptions" [ngValue]="x.value">{{x.name}}</option>
+                </select>
+              </div>
+            </div>
+          </form>
+          <ul id="songkick" >
+            <li *ngFor="let x of allInfo$['songkickInfo']['event'] | orderBy: selectedValue : orderValue | slice:0:5; let i=index">
+              <a target="_blank" href="{{x.uri}}"><strong>{{x.displayName}}</strong></a><br>
+              <span class="artist">Artist: {{x.performance[0].displayName}} </span><span class="time">{{x.start.date | date:'mediumDate'}} {{x.start.time}}</span><br>
+              <div class="type">Type: {{x.type}}</div>
+            </li>
+
+            <div *ngIf="showMore" >
+              <li *ngFor="let x of allInfo$['songkickInfo']['event'] | orderBy: selectedValue : orderValue | slice:5; let i=index" [@fadeIn] = 'fadeOut'>
+                <a target="_blank" href="{{x.uri}}"><strong>{{x.displayName}}</strong></a><br>
+                <span class="artist">Artist: {{x.performance[0].displayName}} </span><span class="time">{{x.start.date | date:'mediumDate'}} {{x.start.time}}</span><br>
+                <div class="type">Type: {{x.type}}</div>
+              </li>
+            </div>
+
+            <div class="col-12 text-center" *ngIf= "allInfo$['songkickInfo']['event'].length > 5">
+              <button class="btn btn-primary" (click)="toggleMore()">{{!showMore? 'Show More' : 'Show Less'}}</button>
+            </div>
+          </ul>
+        </div>
+        <div *ngIf="allInfo$['songkickInfo']['event'] == undefined">
+          <div class="noResults">
+            No Upcoming Events Found for {{title['venue']}}
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+  </ng-template>
+</div>
+</div>
+
+<div class="container col-12 sm-col-10" *ngIf="!isSearched">
+  <div class="noResults">
+    Must submit a search
+  </div>
+</div>
