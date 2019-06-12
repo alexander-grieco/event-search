@@ -1,6 +1,6 @@
 # Event Search
 
-To go to the live website click [here](http://eventsearch-env.e4qmmk2emj.us-east-1.elasticbeanstalk.com/).
+This website is no longer live.
 
 The website was developed with Angular 7 on the front-end and Node.js for the backend
 
